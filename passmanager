@@ -1,0 +1,143 @@
+def addpass():
+    #ask the user for data
+    username=input("Enter your username: ")
+    
+    password=input("Enter the password: ")
+    
+    email=input("Enter the email: ")
+    
+    appname=input("Enter the app name: ")
+    
+    
+    #encrypt
+    
+    alpha='abcdefghijklmnopqrstuvwxyz'
+    key=5
+    encryptedpass=''
+    for i in password:
+        position=alpha.find(i)
+        newposition=(position+5)%26
+        encryptedpass+=alpha[newposition]
+        
+    
+    
+    
+    #move to data to sql table pass
+    cur.execute("insert into pass values('{}','{}','{}','{}')".format(username,encryptedpass,email,appname))
+    test.commit()
+    
+
+def updatepass():
+    #update the given password
+    #ask the user for the app for which the password will be updated
+    
+    appname=input("Enter the name of the app to update the password: ")
+    
+    password=input("Enter the new password: ")
+    
+    
+    #encrypt new password
+    alpha='abcdefghijklmnopqrstuvwxyz'
+    key=5
+    encryptedpass=''
+    for i in password:
+        position=alpha.find(i)
+        newposition=(position+5)%26
+        encryptedpass+=alpha[newposition]
+    
+    
+    
+    cur.execute("update pass set password='{}' where appname='{}'".format(encryptedpass,appname))
+    test.commit()
+    
+def deletepass():
+    #remove the password for the given app 
+    
+    appname=input("Enter the application you would like to delete the password for: ")
+    
+    
+    cur.execute("delete from pass where appname='{}'".format(appname))
+    test.commit()
+    
+def displaypass():
+    #ask the user for the password needed
+    #display email, password, username
+    appname=input("Enter the name of the app to view the password: ")
+    
+    
+    
+    
+    
+    cur.execute("SELECT * from pass where appname='{}' ".format(appname))
+    for i in cur:
+        print("The username is:", i[0])
+        
+        print("The email is:", i[2])
+        
+    
+    
+    #decrypting password
+        alpha='abcdefghijklmnopqrstuvwxyz'
+        key=5
+        decrypt=''
+        for j in i[1]:
+            pos=alpha.find(j)
+            newpos=(pos-5)%26
+            decrypt+=alpha[newpos]
+        print("the password is:", decrypt) 
+        
+     
+def displayemail():
+    #ask user for the email
+    email=input("Enter your email: ")
+    cur.execute("SELECT * from pass where email='{}' ".format(email))
+    for i in cur:
+        print(i)
+        
+        
+#connect mysql
+import mysql.connector as msc
+test= msc.connect(host="localhost", user="root", password="Dhruvsucks@123", database="password_manager")
+cur=test.cursor()
+
+
+
+
+#main menu
+
+print("~~~~~~~~~~~menu~~~~~~~~~~~")
+print("1. Create new password: ")
+print("2. Update existing password")
+print("3. Delete password")
+print("4. Display password")
+print("5. Display all passwords connected to an email")
+print("6. exit")
+
+
+
+
+choice=int(input("enter the function you would like to perform (1,2,3,4,5,6): "))
+
+while choice!=6:
+    if choice==1:
+        addpass()
+        print()
+        choice=int(input("enter the function you would like to perform (1,2,3,4,5,6): "))
+    elif choice==2:
+        updatepass()
+        print()
+        choice=int(input("enter the function you would like to perform (1,2,3,4,5,6): "))
+    elif choice==3:
+        deletepass()
+        print()
+        choice=int(input("enter the function you would like to perform (1,2,3,4,5,6): "))
+    elif choice==4:
+        displaypass()
+        print()
+        choice=int(input("enter the function you would like to perform (1,2,3,4,5,6): "))
+    elif choice==5:
+        displayemail()
+        print()
+        choice=int(input("enter the function you would like to perform (1,2,3,4,5,6): "))
+
+     
